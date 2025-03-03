@@ -8,7 +8,7 @@ import matplotlib.font_manager as fm
 st.set_page_config(page_title="Whatsapp Chat Analyzer", layout="wide")
 
 st.title("WhatsChat🔎")
-st.write("*Made by Mudit Gupta!👨🏻‍💻*")  
+
 
 st.sidebar.title("WhatsApp Chat Analyzer")
 uploadedFile = st.sidebar.file_uploader("Choose a Exported Text File (Excluding Media)🗃️")
