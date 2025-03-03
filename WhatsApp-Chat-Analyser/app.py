@@ -1,14 +1,53 @@
 import streamlit as st
-import preprocessor,helper
+import preprocessor, helper
 import matplotlib.pyplot as plt
 import emoji
 import seaborn as sns
 import matplotlib.font_manager as fm
 
-st.set_page_config(page_title="Whatsapp Chat Analyzer", layout="wide")
+# Set page config
+st.set_page_config(page_title="Whatsapp Chat Analyzer", layout="wide", page_icon="🔍")
+
+# Custom CSS for better UI
+st.markdown("""
+    <style>
+    .main {
+        background-color: #1E1E1E;
+        color: #FFFFFF;
+    }
+    .sidebar .sidebar-content {
+        background-color: #2E2E2E;
+        color: #FFFFFF;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #FF4B4B;
+    }
+    .stButton>button {
+        background-color: #FF4B4B;
+        color: #FFFFFF;
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
+    .stTextInput>div>div>input {
+        background-color: #2E2E2E;
+        color: #FFFFFF;
+    }
+    .stDataFrame {
+        background-color: #2E2E2E;
+        color: #FFFFFF;
+    }
+    .stSelectbox>div>div>select {
+        background-color: #2E2E2E;
+        color: #FFFFFF;
+    }
+    .stMultiSelect>div>div>div>div {
+        background-color: #2E2E2E;
+        color: #FFFFFF;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 st.title("WhatsChat🔎")
-
 
 st.sidebar.title("WhatsApp Chat Analyzer")
 uploadedFile = st.sidebar.file_uploader("Choose a Exported Text File (Excluding Media)🗃️")
@@ -17,8 +56,6 @@ if uploadedFile is not None:
     finalData = bytesData.decode("utf-8")
     dataFrame = preprocessor.preprocess(finalData)
     
-    # st.dataframe(dataFrame)
-
     # fetch unique users
     userList = dataFrame["user"].unique().tolist()
     if "default" in userList:
@@ -29,8 +66,7 @@ if uploadedFile is not None:
 
     if (True):
         #top statistics
-        numMessages, numWords, numMedia, numURL = helper.fetchStats(
-            selectedUser, dataFrame)
+        numMessages, numWords, numMedia, numURL = helper.fetchStats(selectedUser, dataFrame)
         st.title("Top Statistics📈")
         col1, col2, col3, col4 = st.columns(4)
 
@@ -52,7 +88,7 @@ if uploadedFile is not None:
         timeline = helper.monthlyTimeline(selectedUser, dataFrame)
         plt.style.use('dark_background')
         plt.figure(figsize=(12, 3))
-        plt.plot(timeline['time'], timeline['message'])
+        plt.plot(timeline['time'], timeline['message'], color='#FF4B4B')
         plt.xticks(rotation='vertical')
         plt.xlabel('Month', color='yellow')
         plt.ylabel('Message Count', color='yellow')
@@ -76,7 +112,7 @@ if uploadedFile is not None:
             
         with col1:
             fig, ax = plt.subplots(figsize=(8, 6))
-            ax.bar(month, messages)
+            ax.bar(month, messages, color='#FF4B4B')
             ax.set_xlabel('Month of the Year', color="yellow")
             ax.set_ylabel('Number of Messages', color='yellow')
             plt.xticks(rotation='vertical')
@@ -89,7 +125,7 @@ if uploadedFile is not None:
         dailyTimeline = helper.dailyTimeline(selectedUser, dataFrame)
         plt.style.use('dark_background')
         plt.figure(figsize=(14, 3))
-        plt.plot(dailyTimeline['onlyDate'], dailyTimeline['message'])
+        plt.plot(dailyTimeline['onlyDate'], dailyTimeline['message'], color='#FF4B4B')
         plt.xticks(rotation='vertical')
         plt.xlabel('Date', color='yellow')
         plt.ylabel('Message Count', color='yellow')
@@ -113,7 +149,7 @@ if uploadedFile is not None:
             
         with col1:
             fig, ax = plt.subplots(figsize=(8, 6))
-            ax.bar(days, messages)
+            ax.bar(days, messages, color='#FF4B4B')
             ax.set_xlabel('Day of the Week', color="yellow")
             ax.set_ylabel('Number of Messages', color='yellow')
             plt.style.use('dark_background')
@@ -124,7 +160,7 @@ if uploadedFile is not None:
         st.header("Weekly Activity by Time Period📲")
         activity = helper.activity(selectedUser, dataFrame)
         fig, ax = plt.subplots(figsize=(10, 2.5))
-        ax = sns.heatmap(activity)
+        ax = sns.heatmap(activity, cmap='YlOrRd')
         ax.set_xlabel('Time Period', color='yellow')
         ax.set_ylabel('Name of the Day', color='yellow')
         plt.style.use('dark_background')
@@ -135,7 +171,6 @@ if uploadedFile is not None:
         st.header("Day-wise Activity🗓️")
         h1, h2 = helper.hourActivity(selectedUser, dataFrame)
         tabs = st.multiselect("Select day(s) to display",['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
-        #tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
         days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         
         for day in tabs:
@@ -143,7 +178,7 @@ if uploadedFile is not None:
             plot_placeholder = st.empty()
             with plot_placeholder:
                 fig, axs = plt.subplots(figsize=(12, 3))
-                axs.plot(day_data['hour'], day_data['message'])
+                axs.plot(day_data['hour'], day_data['message'], color='#FF4B4B')
                 axs.set_title(day)
                 axs.set_xlabel('Hour of the Day', color='yellow')
                 axs.set_ylabel('Number of Messages', color='yellow')
@@ -167,7 +202,7 @@ if uploadedFile is not None:
                 fig, ax = plt.subplots()
                 plt.xlabel('Name').set_color('yellow')
                 plt.ylabel('Messages Sent').set_color('yellow')
-                ax.bar(name, count, width=0.8)
+                ax.bar(name, count, width=0.8, color='#FF4B4B')
                 plt.xticks(rotation='vertical')
                 ax.tick_params(axis='both', which='major', labelsize=8)
 
@@ -185,7 +220,7 @@ if uploadedFile is not None:
             fig, ax = plt.subplots()
             plt.ylabel('Message').set_color('yellow')
             plt.xlabel('Frequency').set_color('yellow')
-            ax.barh(mostCommon['Message'], mostCommon['Frequency'])
+            ax.barh(mostCommon['Message'], mostCommon['Frequency'], color='#FF4B4B')
             plt.xticks(rotation="vertical")
             st.pyplot(fig)
                 
@@ -243,7 +278,7 @@ if uploadedFile is not None:
             col1, col2 = st.columns(2)
             with col1:
                 fig, ax = plt.subplots(figsize=(8, 6))
-                ax.bar(timeDifference['user'], timeDifference['replyTime'].dt.seconds)
+                ax.bar(timeDifference['user'], timeDifference['replyTime'].dt.seconds, color='#FF4B4B')
                 ax.set_xlabel('Participant', color='yellow')
                 ax.set_ylabel('Average Reply Time (Seconds)', color='yellow')
                 ax.set_title('')
